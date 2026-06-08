@@ -1,7 +1,8 @@
-# Worker image for the cloud watch loop. Uses the official Playwright Python base,
-# which ships Chromium and all its system libraries already matched to a Playwright
-# version, so we do not have to apt-install browser deps ourselves.
-FROM mcr.microsoft.com/playwright/python:v1.44.0-jammy
+# Worker image for the cloud watch loop.
+# We base on python:3.12-slim (the package needs Python 3.11+ for tomllib) and let
+# Playwright pull Chromium plus its system libraries via `install --with-deps`. This
+# keeps the Python version and the Playwright browser exactly matched to our pip pin.
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -10,11 +11,11 @@ COPY pyproject.toml README.md ./
 COPY src ./src
 RUN pip install --no-cache-dir .
 
-# Ensure a Chromium matching the installed Playwright is present.
-RUN python -m playwright install chromium
+# Chromium + all required OS libraries, matched to the installed Playwright version.
+RUN playwright install --with-deps chromium
 
 COPY config.cloud.toml ./config.cloud.toml
 
 ENV PYTHONUNBUFFERED=1
 # seen.db is written to /data, which Fly mounts as a persistent volume.
-CMD ["giveawayinator", "--watch", "15", "-c", "config.cloud.toml"]
+CMD ["giveawayinator", "--watch", "720", "-c", "config.cloud.toml"]

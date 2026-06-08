@@ -10,8 +10,9 @@ primary_region = "ord"
 source = "giveawayinator_data"
 destination = "/data"
 
+# 2x/day (every 12h) to fit the Apify free tier; see config.cloud.toml for the math.
 [processes]
-app = "giveawayinator --watch 15 -c config.cloud.toml"
+app = "giveawayinator --watch 720 -c config.cloud.toml"
 
 [[vm]]
 size = "shared-cpu-1x"

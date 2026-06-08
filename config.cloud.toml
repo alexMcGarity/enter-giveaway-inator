@@ -16,7 +16,10 @@ kind = "apify"
 [source.apify]
 actor = "clockworks~tiktok-scraper"
 token = ""  # injected from APIFY_TOKEN
-results_per_hashtag = 30
+# Throttled for the Apify free tier (~$0.0037/result, $5/mo credit). With the 2x/day
+# cadence below, ~4 results x 3 hashtags x 2 scans = ~24 results/day = ~$2.6/mo.
+# After the credit cycle resets you can raise this (e.g. to 8) for better coverage.
+results_per_hashtag = 4
 
 [store]
 # On a Fly persistent volume so dedupe survives restarts and redeploys.
