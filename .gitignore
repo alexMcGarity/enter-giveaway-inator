@@ -20,3 +20,16 @@ seen.json
 .idea/
 .DS_Store
 Thumbs.db
+
+# Agent / local context — never publish
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+# Secrets
+.env
+.env.*
+*.local
+secrets.*
+*.key
+*.pem
