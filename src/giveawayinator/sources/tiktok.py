@@ -80,7 +80,11 @@ class TikTokSource:
                 if href in seen_urls:
                     continue
                 seen_urls.add(href)
-                caption = (a.get_attribute("aria-label") or a.inner_text() or "").strip()
+                # On hashtag grids the full description lives in the thumbnail's img
+                # alt text; the anchor's own text is usually just the username.
+                img = a.query_selector("img")
+                img_alt = img.get_attribute("alt") if img else None
+                caption = (img_alt or a.get_attribute("aria-label") or a.inner_text() or "").strip()
                 post = self._to_post(href, caption, tag)
                 if post:
                     yield post
