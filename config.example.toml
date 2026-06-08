@@ -6,6 +6,10 @@ hashtags = ["pokemongiveaway", "pokemontcggiveaway", "pokemoncardgiveaway"]
 keywords = ["pokemon", "pokémon", "tcg", "booster", "charizard", "card giveaway"]
 # Max posts to pull per hashtag per run.
 max_posts_per_hashtag = 30
+# Phrases for `giveawayinator --open-live-search`, which opens TikTok's LIVE search
+# in your own (logged-in) browser so you can see who is actually streaming right now.
+# TikTok gates live discovery behind login, so this hands you off rather than scraping it.
+live_queries = ["pokemon giveaway", "pokemon cards", "pokemon tcg"]
 
 [source]
 # "tiktok" uses Playwright to browse public hashtag pages.
@@ -22,7 +26,8 @@ max_delay = 5.0
 path = "seen.db"
 
 [notify]
-# Any subset of: "console", "desktop", "discord"
+# Any subset of: "console", "desktop", "discord", "browser"
+# "browser" auto-opens live-candidate streams in your logged-in browser (capped per run).
 channels = ["console"]
 
 [notify.discord]

@@ -12,6 +12,9 @@ class SearchConfig:
     hashtags: list[str]
     keywords: list[str]
     max_posts_per_hashtag: int = 30
+    # Phrases used to open TikTok's LIVE search in your own browser, where you are
+    # logged in and can see who is actually streaming right now.
+    live_queries: list[str] = field(default_factory=lambda: ["pokemon giveaway", "pokemon cards"])
 
 
 @dataclass
@@ -69,6 +72,7 @@ def load_config(path: str | Path) -> Config:
             hashtags=search.get("hashtags", []),
             keywords=search.get("keywords", []),
             max_posts_per_hashtag=search.get("max_posts_per_hashtag", 30),
+            live_queries=search.get("live_queries", ["pokemon giveaway", "pokemon cards"]),
         ),
         source=SourceConfig(
             kind=source.get("kind", "sample"),

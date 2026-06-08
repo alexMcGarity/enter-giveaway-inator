@@ -34,6 +34,12 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         metavar="MINUTES",
         help="Re-run every MINUTES minutes instead of running once.",
     )
+    p.add_argument(
+        "--open-live-search",
+        action="store_true",
+        help="Open TikTok LIVE search for your live_queries in your browser, then exit. "
+        "You are logged in there, so you see who is actually streaming and can tap in.",
+    )
     return p
 
 
@@ -66,6 +72,21 @@ def main(argv: list[str] | None = None) -> int:
     except FileNotFoundError as exc:
         _console.print(f"[red]{exc}[/red]")
         return 1
+
+    if args.open_live_search:
+        from .browser import open_live_search
+
+        queries = config.search.live_queries
+        if not queries:
+            _console.print("[red]No live_queries set in config.toml.[/red]")
+            return 1
+        opened = open_live_search(queries)
+        _console.print(
+            f"[green]Opened {len(opened)} TikTok LIVE search tab(s) in your browser:[/green]"
+        )
+        for url in opened:
+            _console.print(f"  [link={url}]{url}[/link]")
+        return 0
 
     if args.watch:
         _console.print(f"[green]Watching every {args.watch} min. Ctrl-C to stop.[/green]")

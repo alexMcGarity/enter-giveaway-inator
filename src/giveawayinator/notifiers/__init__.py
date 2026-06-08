@@ -21,6 +21,10 @@ def build_notifiers(cfg: NotifyConfig) -> list[Notifier]:
             notifiers.append(DesktopNotifier())
         elif channel == "discord":
             notifiers.append(DiscordNotifier(cfg.discord.webhook_url))
+        elif channel == "browser":
+            from .browser import BrowserNotifier  # opens live candidates in your browser
+
+            notifiers.append(BrowserNotifier())
         else:
             raise ValueError(f"Unknown notify channel: {channel!r}")
     return notifiers

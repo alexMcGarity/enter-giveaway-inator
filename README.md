@@ -14,12 +14,18 @@ Discord.
 
 ## Highlights
 
-- **Live giveaways flagged 🔴 and surfaced first.** When a giveaway runs on a TikTok
-  LIVE stream (where you join by tapping the in-stream Giveaway / treasure-box button
-  instead of commenting), it is marked LIVE, sorted to the top of the batch because it
-  is time-sensitive, and the alert links straight to `@creator/live` so you can jump in
-  and tap the button. Live tiles are detected both from `/live` links on hashtag pages
-  and from caption signals ("giveaway on live", "treasure box", "join my live", and so on).
+- **Live giveaways flagged 🔴 and surfaced first.** Giveaways that look like they run on
+  a TikTok LIVE stream (where you join by tapping the in-stream Giveaway / treasure-box
+  button instead of commenting) are marked LIVE, sorted to the top of the batch because
+  they are time-sensitive, and the alert links straight to `@creator/live`. These are
+  detected from caption signals ("giveaway on live", "treasure box", "join my live") and
+  any `/live` links seen while scraping.
+- **Live handoff into your own browser.** TikTok gates live discovery behind login, and
+  this tool never logs in. So to actually reach people streaming *right now*, run
+  `giveawayinator --open-live-search`: it opens TikTok's LIVE search for your `live_queries`
+  in your default browser, where you are already signed in and can see live rooms and tap
+  the giveaway button yourself. The optional `browser` notify channel does the same for
+  live candidates found during a scan. The bot never authenticates; you do.
 - **Requirement parsing.** Each alert includes a plain checklist (follow, like, comment,
   save, tag N friends) plus any deadline it can find ("ends 6/15", "winner announced Friday").
 - **Won't ping you twice.** A SQLite store remembers everything it has already shown you.
@@ -94,6 +100,9 @@ giveawayinator
 # Keep watching, re-scan every 30 minutes:
 giveawayinator --watch 30
 
+# Jump into live giveaways: open TikTok LIVE search in your logged-in browser:
+giveawayinator --open-live-search
+
 # Use a different config file:
 giveawayinator -c other-config.toml
 ```
@@ -109,6 +118,8 @@ At the end of each run it prints a summary line:
 - **discord**: posts an embed to a channel webhook. Create a webhook in your Discord
   server (Channel Settings → Integrations → Webhooks), paste the URL into
   `notify.discord.webhook_url`, and add `"discord"` to `notify.channels`.
+- **browser**: for live-candidate giveaways only, opens `@creator/live` in your default
+  (logged-in) browser, capped per run so a busy scan does not flood you with tabs.
 
 ## How it works
 
