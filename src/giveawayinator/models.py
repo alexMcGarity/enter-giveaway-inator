@@ -35,7 +35,8 @@ class Requirements:
     comment: bool = False
     save: bool = False
     share: bool = False
-    tag_friends: int = 0  # number of friends to tag, 0 if none mentioned
+    tag: bool = False  # tagging friends is required (count may be unspecified)
+    tag_friends: int = 0  # specific number of friends to tag, 0 if unspecified
     deadline: str | None = None  # raw text of any deadline we spotted
 
     def as_checklist(self) -> list[str]:
@@ -53,6 +54,8 @@ class Requirements:
             items.append("Share / repost")
         if self.tag_friends:
             items.append(f"Tag {self.tag_friends} friend(s)")
+        elif self.tag:
+            items.append("Tag friend(s)")
         if not items:
             items.append("No explicit requirements found — read the caption")
         return items

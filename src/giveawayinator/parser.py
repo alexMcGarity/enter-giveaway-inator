@@ -71,9 +71,15 @@ COMMENT_PATTERNS = [r"\bcomment\b", r"\bdrop a comment\b", r"comment below", r"\
 SAVE_PATTERNS = [r"\bsave (this|the post)\b", r"\bbookmark\b"]
 SHARE_PATTERNS = [r"\bshare\b", r"\brepost\b", r"\bre-post\b", r"share to your story"]
 
-# "tag 3 friends", "tag three friends", "tag a friend"
-TAG_PATTERN = re.compile(
-    r"tag\s+(?:(\d+)|(a|one|two|three|four|five))\s+(?:friends?|people|mutuals?)",
+# Any tag-a-friend ask: "tag 3 friends", "tag your friends", "tag a friend",
+# "tag two mutuals", "tag someone", "tag friends".
+TAG_ANY_PATTERN = re.compile(
+    r"\btag\s+(?:\w+\s+){0,2}(?:friends?|people|mutuals?|someone)\b",
+    re.IGNORECASE,
+)
+# When a specific count is given, capture it: "tag 3 friends", "tag three friends".
+TAG_COUNT_PATTERN = re.compile(
+    r"\btag\s+(?:(\d+)|(a|one|two|three|four|five))\s+(?:friends?|people|mutuals?)",
     re.IGNORECASE,
 )
 WORD_NUMBERS = {"a": 1, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5}
@@ -118,10 +124,12 @@ def parse_requirements(caption: str) -> Requirements:
         share=_matches_any(caption, SHARE_PATTERNS),
     )
 
-    tag_match = TAG_PATTERN.search(caption)
-    if tag_match:
-        digit, word = tag_match.groups()
-        req.tag_friends = int(digit) if digit else WORD_NUMBERS.get((word or "").lower(), 1)
+    if TAG_ANY_PATTERN.search(caption):
+        req.tag = True
+        count_match = TAG_COUNT_PATTERN.search(caption)
+        if count_match:
+            digit, word = count_match.groups()
+            req.tag_friends = int(digit) if digit else WORD_NUMBERS.get((word or "").lower(), 1)
 
     deadline_match = DEADLINE_PATTERN.search(caption)
     if deadline_match:

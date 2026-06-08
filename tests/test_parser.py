@@ -36,10 +36,24 @@ def test_requirements_full_checklist():
 
 def test_tag_word_number():
     req = parser.parse_requirements("tag two friends to enter")
-    assert req.tag_friends == 2
+    assert req.tag and req.tag_friends == 2
 
     req2 = parser.parse_requirements("tag a friend below")
-    assert req2.tag_friends == 1
+    assert req2.tag and req2.tag_friends == 1
+
+
+def test_tag_without_count():
+    # "tag your friends" has no number, but is still a tag requirement.
+    for caption in ["tag your friends", "make sure to tag friends", "tag someone below"]:
+        req = parser.parse_requirements(caption)
+        assert req.tag is True
+        assert req.tag_friends == 0
+        assert any("Tag friend(s)" == item for item in req.as_checklist())
+
+
+def test_no_tag_requirement():
+    req = parser.parse_requirements("follow and like to win")
+    assert req.tag is False
 
 
 def test_parse_returns_none_for_non_giveaway():
