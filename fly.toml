@@ -1,0 +1,18 @@
+# Fly.io config for the enter-giveaway-inator worker (no web service; it just runs the
+# watch loop and pushes to Discord + ntfy). If the app name is taken, change it and rerun.
+app = "enter-giveaway-inator"
+primary_region = "ord"
+
+[build]
+
+# Persistent volume so seen.db (the de-dupe store) survives restarts and deploys.
+[mounts]
+source = "giveawayinator_data"
+destination = "/data"
+
+[processes]
+app = "giveawayinator --watch 15 -c config.cloud.toml"
+
+[[vm]]
+size = "shared-cpu-1x"
+memory = "512mb"  # headless Chromium; bump to 1024 if you see out-of-memory kills

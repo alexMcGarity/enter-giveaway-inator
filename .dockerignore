@@ -1,0 +1,21 @@
+# Never ship local secrets or state into the image.
+config.toml
+seen.db
+*.db
+*.sqlite3
+CLAUDE.md
+
+# Dev / build cruft.
+.venv/
+venv/
+.git/
+.gitignore
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.playwright/
+tests/
+dist/
+build/
+*.egg-info/

@@ -1,0 +1,35 @@
+# Config for the cloud (Fly.io) worker. Safe to commit: it holds NO secrets.
+# The Discord webhook and ntfy topic are injected at runtime from environment
+# variables (Fly secrets): DISCORD_WEBHOOK_URL and NTFY_TOPIC.
+
+[search]
+hashtags = ["pokemongiveaway", "pokemontcggiveaway", "pokemoncardgiveaway"]
+keywords = ["pokemon", "pokémon", "tcg", "booster", "charizard", "card giveaway"]
+max_posts_per_hashtag = 30
+live_queries = ["pokemon giveaway", "pokemon cards", "pokemon tcg"]
+
+[source]
+kind = "tiktok"
+headless = true
+min_delay = 2.0
+max_delay = 5.0
+
+[store]
+# On a Fly persistent volume so dedupe survives restarts and redeploys.
+path = "/data/seen.db"
+
+[notify]
+# Only the channels that make sense headless in the cloud. desktop/browser are local-only.
+channels = ["console", "discord", "ntfy"]
+
+[notify.discord]
+webhook_url = ""  # injected from DISCORD_WEBHOOK_URL
+
+[notify.ntfy]
+topic = ""        # injected from NTFY_TOPIC
+server = "https://ntfy.sh"
+live_only = true
+
+[filter]
+max_age_days = 7
+require_pokemon_keyword = true

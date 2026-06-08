@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -91,10 +92,14 @@ def load_config(path: str | Path) -> Config:
         ),
         notify=NotifyConfig(
             channels=notify.get("channels", ["console"]),
-            discord=DiscordConfig(webhook_url=discord.get("webhook_url", "")),
+            # Secrets prefer env vars (Fly secrets / cloud) over the file, so they never
+            # have to be baked into config.cloud.toml or the image.
+            discord=DiscordConfig(
+                webhook_url=os.environ.get("DISCORD_WEBHOOK_URL", discord.get("webhook_url", "")),
+            ),
             ntfy=NtfyConfig(
-                topic=ntfy.get("topic", ""),
-                server=ntfy.get("server", "https://ntfy.sh"),
+                topic=os.environ.get("NTFY_TOPIC", ntfy.get("topic", "")),
+                server=os.environ.get("NTFY_SERVER", ntfy.get("server", "https://ntfy.sh")),
                 live_only=ntfy.get("live_only", True),
             ),
         ),

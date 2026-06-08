@@ -15,6 +15,7 @@ maintenance. When they break, run with headless=false to see what changed.
 from __future__ import annotations
 
 import random
+import sys
 import time
 from datetime import datetime, timezone
 from typing import Iterable
@@ -67,7 +68,13 @@ class TikTokSource:
         self._sleep()
 
         # Bail early if TikTok is showing a login/challenge wall instead of content.
+        # This is the tell-tale sign of being blocked, common on datacenter IPs.
         if page.query_selector("text=Log in") and not page.query_selector("a[href*='/video/']"):
+            print(
+                f"[tiktok] login/block wall on #{tag} (no content). "
+                "If this persists in the cloud, the datacenter IP is likely blocked.",
+                file=sys.stderr,
+            )
             return
 
         seen_urls: set[str] = set()
