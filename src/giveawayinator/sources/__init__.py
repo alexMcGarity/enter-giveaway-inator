@@ -19,4 +19,14 @@ def build_source(cfg: SourceConfig) -> Source:
             min_delay=cfg.min_delay,
             max_delay=cfg.max_delay,
         )
-    raise ValueError(f"Unknown source kind: {cfg.kind!r} (expected 'sample' or 'tiktok')")
+    if cfg.kind == "apify":
+        from .apify import ApifySource  # lazy: only needed when actually used
+
+        return ApifySource(
+            token=cfg.apify.token,
+            actor=cfg.apify.actor,
+            results_per_hashtag=cfg.apify.results_per_hashtag,
+        )
+    raise ValueError(
+        f"Unknown source kind: {cfg.kind!r} (expected 'sample', 'tiktok', or 'apify')"
+    )

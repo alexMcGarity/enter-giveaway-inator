@@ -12,14 +12,23 @@ max_posts_per_hashtag = 30
 live_queries = ["pokemon giveaway", "pokemon cards", "pokemon tcg"]
 
 [source]
-# "tiktok" uses Playwright to browse public hashtag pages.
 # "sample" replays bundled example posts so you can test the pipeline with no scraping.
+# "tiktok" uses Playwright to browse public hashtag pages (works from a residential IP;
+#          TikTok blocks datacenter IPs, so this fails in the cloud).
+# "apify"  offloads scraping to an Apify actor and returns JSON (works from the cloud).
 kind = "sample"
-# Run the browser headless. Set false to watch it / solve a challenge once.
+# Run the browser headless. Set false to watch it / solve a challenge once. (tiktok only)
 headless = true
-# Polite delay between page actions, in seconds.
+# Polite delay between page actions, in seconds. (tiktok only)
 min_delay = 2.0
 max_delay = 5.0
+
+[source.apify]
+# Used when kind = "apify". Create a token at https://console.apify.com/account/integrations.
+# Prefer the APIFY_TOKEN env var over putting the token here.
+actor = "clockworks~tiktok-scraper"
+token = ""
+results_per_hashtag = 30
 
 [store]
 # SQLite file used to remember which posts you've already been notified about.

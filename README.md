@@ -155,7 +155,8 @@ src/giveawayinator/
   sources/
     base.py          Source protocol
     sample.py        offline example posts
-    tiktok.py        Playwright-backed public hashtag + live scraper
+    tiktok.py        Playwright-backed public hashtag + live scraper (residential IP)
+    apify.py         Apify-actor scraper returning JSON (works from the cloud)
     __init__.py      build_source() registry
   notifiers/
     base.py          Notifier protocol
@@ -174,6 +175,29 @@ tests/
 pip install -e ".[dev]"
 pytest
 ```
+
+## Run in the cloud (Fly.io)
+
+For 24/7 operation there is a containerized worker. Key facts:
+
+- **TikTok blocks datacenter IPs.** The Playwright `tiktok` source gets a login wall from a
+  cloud IP, so the cloud worker uses the **`apify`** source instead: an
+  [Apify](https://apify.com) actor scrapes TikTok on its own infrastructure and returns
+  JSON, which the worker fetches and runs through the same parse -> notify pipeline.
+- **Headless-only channels.** The cloud config uses `console` (logs) + `discord` + `ntfy`.
+  `desktop`, `browser`, and `--open-live-search` are local-only (they need your screen /
+  logged-in browser), so the live entry path stays: cloud detects -> phone push -> you tap.
+- **Secrets via env / Fly secrets**, never in the image: `APIFY_TOKEN`, `DISCORD_WEBHOOK_URL`,
+  `NTFY_TOPIC`. `seen.db` lives on a Fly volume so dedupe survives restarts.
+
+```bash
+fly apps create enter-giveaway-inator
+fly volumes create giveawayinator_data --region ord --size 1
+fly secrets set APIFY_TOKEN=... DISCORD_WEBHOOK_URL=... NTFY_TOPIC=...
+fly deploy --remote-only
+```
+
+See [Dockerfile](Dockerfile), [fly.toml](fly.toml), and [config.cloud.toml](config.cloud.toml).
 
 ## Maintenance notes
 

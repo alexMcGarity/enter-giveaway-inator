@@ -19,11 +19,21 @@ class SearchConfig:
 
 
 @dataclass
+class ApifyConfig:
+    # Apify actor that scrapes TikTok and returns dataset items. Default is the widely
+    # used Clockworks TikTok scraper; swap for any actor with a compatible input/output.
+    actor: str = "clockworks~tiktok-scraper"
+    token: str = ""
+    results_per_hashtag: int = 30
+
+
+@dataclass
 class SourceConfig:
-    kind: str = "sample"
+    kind: str = "sample"  # "sample" | "tiktok" | "apify"
     headless: bool = True
     min_delay: float = 2.0
     max_delay: float = 5.0
+    apify: ApifyConfig = field(default_factory=ApifyConfig)
 
 
 @dataclass
@@ -71,6 +81,7 @@ def load_config(path: str | Path) -> Config:
 
     search = raw.get("search", {})
     source = raw.get("source", {})
+    apify = source.get("apify", {})
     store = raw.get("store", {})
     notify = raw.get("notify", {})
     discord = notify.get("discord", {})
@@ -89,6 +100,11 @@ def load_config(path: str | Path) -> Config:
             headless=source.get("headless", True),
             min_delay=source.get("min_delay", 2.0),
             max_delay=source.get("max_delay", 5.0),
+            apify=ApifyConfig(
+                actor=apify.get("actor", "clockworks~tiktok-scraper"),
+                token=os.environ.get("APIFY_TOKEN", apify.get("token", "")),
+                results_per_hashtag=apify.get("results_per_hashtag", 30),
+            ),
         ),
         notify=NotifyConfig(
             channels=notify.get("channels", ["console"]),

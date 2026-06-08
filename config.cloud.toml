@@ -9,10 +9,14 @@ max_posts_per_hashtag = 30
 live_queries = ["pokemon giveaway", "pokemon cards", "pokemon tcg"]
 
 [source]
-kind = "tiktok"
-headless = true
-min_delay = 2.0
-max_delay = 5.0
+# Apify scrapes TikTok on its own infrastructure and returns JSON, so this works from a
+# datacenter IP (direct scraping from the cloud gets blocked by TikTok).
+kind = "apify"
+
+[source.apify]
+actor = "clockworks~tiktok-scraper"
+token = ""  # injected from APIFY_TOKEN
+results_per_hashtag = 30
 
 [store]
 # On a Fly persistent volume so dedupe survives restarts and redeploys.
