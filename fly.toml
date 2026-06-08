@@ -15,4 +15,4 @@ app = "giveawayinator --watch 15 -c config.cloud.toml"
 
 [[vm]]
 size = "shared-cpu-1x"
-memory = "512mb"  # headless Chromium; bump to 1024 if you see out-of-memory kills
+memory = "1024mb"  # headless Chromium needs headroom; 512mb OOM-kills the browser
