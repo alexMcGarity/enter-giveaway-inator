@@ -18,4 +18,4 @@ COPY config.cloud.toml ./config.cloud.toml
 
 ENV PYTHONUNBUFFERED=1
 # seen.db is written to /data, which Fly mounts as a persistent volume.
-CMD ["giveawayinator", "--watch", "720", "-c", "config.cloud.toml"]
+CMD ["giveawayinator", "--at", "10:00,17:00", "--tz", "America/Chicago", "-c", "config.cloud.toml"]

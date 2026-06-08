@@ -5,10 +5,13 @@ from __future__ import annotations
 import argparse
 import sys
 import time
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from rich.console import Console
 
 from .config import load_config
+from .schedule import next_run_at, parse_times
 from .notifiers import build_notifiers
 from .pipeline import run_once
 from .sources import build_source
@@ -33,6 +36,17 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         type=float,
         metavar="MINUTES",
         help="Re-run every MINUTES minutes instead of running once.",
+    )
+    p.add_argument(
+        "--at",
+        metavar="HH:MM,...",
+        help="Run at fixed clock times each day, e.g. '10:00,17:00'. Uses --tz.",
+    )
+    p.add_argument(
+        "--tz",
+        default="America/Chicago",
+        metavar="ZONE",
+        help="IANA timezone for --at (default America/Chicago, i.e. US Central, DST-aware).",
     )
     p.add_argument(
         "--open-live-search",
@@ -88,7 +102,30 @@ def main(argv: list[str] | None = None) -> int:
             _console.print(f"  [link={url}]{url}[/link]")
         return 0
 
-    if args.watch:
+    if args.at:
+        try:
+            times = parse_times(args.at)
+            tz = ZoneInfo(args.tz)
+        except (ValueError, KeyError) as exc:
+            _console.print(f"[red]Bad --at/--tz: {exc}[/red]")
+            return 1
+        _console.print(
+            f"[green]Scheduled scans at {args.at} {args.tz} each day. Ctrl-C to stop.[/green]"
+        )
+        try:
+            while True:
+                now = datetime.now(tz)
+                nxt = next_run_at(times, now)
+                sleep_s = (nxt - now).total_seconds()
+                _console.print(
+                    f"[dim]Next scan {nxt:%Y-%m-%d %H:%M %Z} (in {sleep_s / 3600:.1f}h)[/dim]"
+                )
+                time.sleep(sleep_s)
+                _run(config, source_override=args.source)
+        except KeyboardInterrupt:
+            _console.print("\n[dim]Stopped.[/dim]")
+            return 0
+    elif args.watch:
         _console.print(f"[green]Watching every {args.watch} min. Ctrl-C to stop.[/green]")
         try:
             while True:
