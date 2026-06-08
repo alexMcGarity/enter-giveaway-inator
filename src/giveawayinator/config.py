@@ -24,7 +24,18 @@ class ApifyConfig:
     # used Clockworks TikTok scraper; swap for any actor with a compatible input/output.
     actor: str = "clockworks~tiktok-scraper"
     token: str = ""
-    results_per_hashtag: int = 30
+    results_per_hashtag: int = 30  # results per search query per scan
+    # Search by newest in a recent window so each scan brings FRESH posts (hashtag mode
+    # returns stable all-time-popular posts that dedupe to nothing after the first scan).
+    search_queries: list[str] = field(
+        default_factory=lambda: [
+            "pokemon giveaway",
+            "pokemon card giveaway",
+            "pokemon tcg giveaway",
+        ]
+    )
+    date_filter: str = "PAST_24_HOURS"  # ALL_TIME | PAST_24_HOURS | PAST_WEEK | ...
+    sorting: str = "LATEST"  # MOST_RELEVANT | MOST_LIKED | LATEST
 
 
 @dataclass
@@ -104,6 +115,12 @@ def load_config(path: str | Path) -> Config:
                 actor=apify.get("actor", "clockworks~tiktok-scraper"),
                 token=os.environ.get("APIFY_TOKEN", apify.get("token", "")),
                 results_per_hashtag=apify.get("results_per_hashtag", 30),
+                search_queries=apify.get(
+                    "search_queries",
+                    ["pokemon giveaway", "pokemon card giveaway", "pokemon tcg giveaway"],
+                ),
+                date_filter=apify.get("date_filter", "PAST_24_HOURS"),
+                sorting=apify.get("sorting", "LATEST"),
             ),
         ),
         notify=NotifyConfig(

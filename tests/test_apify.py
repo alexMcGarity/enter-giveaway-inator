@@ -56,5 +56,27 @@ def test_fetch_uses_injected_fetcher_and_maps_items():
 
     assert [p.id for p in posts] == ["1", "2"]  # the id-less item is dropped
     assert captured["params"] == {"token": "tok"}
-    assert captured["payload"]["hashtags"] == ["pokemongiveaway", "pokemoncards"]  # '#' stripped
+    # No search_queries configured -> hashtags become the queries ('#' stripped).
+    assert captured["payload"]["searchQueries"] == ["pokemongiveaway", "pokemoncards"]
+    assert captured["payload"]["videoSearchSorting"] == "LATEST"
+    assert captured["payload"]["videoSearchDateFilter"] == "PAST_24_HOURS"
     assert "clockworks~tiktok-scraper" in captured["url"]
+
+
+def test_fetch_uses_configured_search_queries():
+    captured = {}
+
+    def fake_fetcher(url, params, payload):
+        captured["payload"] = payload
+        return []
+
+    src = ApifySource(
+        token="tok",
+        search_queries=["pokemon giveaway", "charizard giveaway"],
+        date_filter="PAST_WEEK",
+        sorting="LATEST",
+        fetcher=fake_fetcher,
+    )
+    list(src.fetch(["ignored_hashtag"], max_per_hashtag=30))
+    assert captured["payload"]["searchQueries"] == ["pokemon giveaway", "charizard giveaway"]
+    assert captured["payload"]["videoSearchDateFilter"] == "PAST_WEEK"

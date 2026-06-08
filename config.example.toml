@@ -28,7 +28,12 @@ max_delay = 5.0
 # Prefer the APIFY_TOKEN env var over putting the token here.
 actor = "clockworks~tiktok-scraper"
 token = ""
-results_per_hashtag = 30
+results_per_hashtag = 30  # results per search query
+# Search newest-first in a recent window so each scan brings fresh posts. Hashtag mode
+# returns the same all-time-popular posts every run (they dedupe to nothing).
+search_queries = ["pokemon giveaway", "pokemon card giveaway", "pokemon tcg giveaway"]
+date_filter = "PAST_24_HOURS"  # ALL_TIME | PAST_24_HOURS | PAST_WEEK | PAST_MONTH | ...
+sorting = "LATEST"             # MOST_RELEVANT | MOST_LIKED | LATEST
 
 [store]
 # SQLite file used to remember which posts you've already been notified about.

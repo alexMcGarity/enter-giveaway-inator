@@ -5,9 +5,12 @@ the scrape on its own (residential / managed) infrastructure and returns JSON, w
 datacenter IP is free to fetch. We call the actor's run-sync endpoint, which runs the actor
 and returns its dataset items in one HTTP request, then map those items to Posts.
 
-The default actor is the Clockworks TikTok scraper; its items expose `id`, `text`,
-`webVideoUrl`, `authorMeta.name`, and `createTimeISO`. Field access is defensive so a
-slightly different actor shape still yields usable Posts.
+The default actor is the Clockworks TikTok scraper. We use its *search* mode sorted by
+LATEST within a recent date window, not hashtag mode: hashtag mode returns the same
+all-time-popular posts every run (so after the first scan everything is already-seen),
+whereas search-by-latest brings genuinely fresh posts each scan. Items expose `id`,
+`text`, `webVideoUrl`, `authorMeta.name`, and `createTimeISO`; field access is defensive
+so a slightly different actor shape still yields usable Posts.
 """
 
 from __future__ import annotations
@@ -36,6 +39,9 @@ class ApifySource:
         token: str,
         actor: str = "clockworks~tiktok-scraper",
         results_per_hashtag: int = 30,
+        search_queries: list[str] | None = None,
+        date_filter: str = "PAST_24_HOURS",
+        sorting: str = "LATEST",
         fetcher: Fetcher = _default_fetcher,
     ):
         if not token:
@@ -43,12 +49,20 @@ class ApifySource:
         self.token = token
         self.actor = actor
         self.results_per_hashtag = results_per_hashtag
+        self.search_queries = search_queries or []
+        self.date_filter = date_filter
+        self.sorting = sorting
         self._fetcher = fetcher
 
     def fetch(self, hashtags: list[str], max_per_hashtag: int) -> Iterable[Post]:
+        # Prefer configured search phrases; fall back to the hashtags as plain queries.
+        queries = self.search_queries or [h.lstrip("#") for h in hashtags]
         url = _RUN_SYNC.format(actor=self.actor)
         payload = {
-            "hashtags": [h.lstrip("#") for h in hashtags],
+            "searchQueries": queries,
+            "searchSection": "/video",
+            "videoSearchSorting": self.sorting,
+            "videoSearchDateFilter": self.date_filter,
             "resultsPerPage": self.results_per_hashtag or max_per_hashtag,
             "shouldDownloadVideos": False,
             "shouldDownloadCovers": False,

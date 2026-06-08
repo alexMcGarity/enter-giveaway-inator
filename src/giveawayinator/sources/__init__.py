@@ -26,6 +26,9 @@ def build_source(cfg: SourceConfig) -> Source:
             token=cfg.apify.token,
             actor=cfg.apify.actor,
             results_per_hashtag=cfg.apify.results_per_hashtag,
+            search_queries=cfg.apify.search_queries,
+            date_filter=cfg.apify.date_filter,
+            sorting=cfg.apify.sorting,
         )
     raise ValueError(
         f"Unknown source kind: {cfg.kind!r} (expected 'sample', 'tiktok', or 'apify')"
