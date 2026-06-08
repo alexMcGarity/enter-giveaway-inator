@@ -1,0 +1,36 @@
+# Copy this to config.toml and edit. config.toml is gitignored.
+
+[search]
+# Hashtags / keywords to scan on TikTok. Keep these focused so the feed stays clean.
+hashtags = ["pokemongiveaway", "pokemontcggiveaway", "pokemoncardgiveaway"]
+keywords = ["pokemon", "pokémon", "tcg", "booster", "charizard", "card giveaway"]
+# Max posts to pull per hashtag per run.
+max_posts_per_hashtag = 30
+
+[source]
+# "tiktok" uses Playwright to browse public hashtag pages.
+# "sample" replays bundled example posts so you can test the pipeline with no scraping.
+kind = "sample"
+# Run the browser headless. Set false to watch it / solve a challenge once.
+headless = true
+# Polite delay between page actions, in seconds.
+min_delay = 2.0
+max_delay = 5.0
+
+[store]
+# SQLite file used to remember which posts you've already been notified about.
+path = "seen.db"
+
+[notify]
+# Any subset of: "console", "desktop", "discord"
+channels = ["console"]
+
+[notify.discord]
+# Only used if "discord" is in channels.
+webhook_url = ""
+
+[filter]
+# Skip posts older than this many days (0 = no limit).
+max_age_days = 7
+# Require at least one Pokemon keyword in the caption.
+require_pokemon_keyword = true

@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Project
+config.toml
+*.db
+*.sqlite3
+.playwright/
+seen.json
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
