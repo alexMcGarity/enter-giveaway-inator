@@ -46,7 +46,13 @@ class TikTokSource:
             ) from exc
 
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=self.headless)
+            # --no-sandbox: Chromium will not run as root (containers) without it.
+            # --disable-dev-shm-usage: containers have a tiny /dev/shm (64MB), which makes
+            #   Chromium hang or crash on busy pages; this routes shared memory to /tmp.
+            browser = p.chromium.launch(
+                headless=self.headless,
+                args=["--no-sandbox", "--disable-dev-shm-usage"],
+            )
             context = browser.new_context(
                 user_agent=(
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
