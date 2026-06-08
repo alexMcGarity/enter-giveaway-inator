@@ -20,12 +20,13 @@ Discord.
   they are time-sensitive, and the alert links straight to `@creator/live`. These are
   detected from caption signals ("giveaway on live", "treasure box", "join my live") and
   any `/live` links seen while scraping.
-- **Live handoff into your own browser.** TikTok gates live discovery behind login, and
-  this tool never logs in. So to actually reach people streaming *right now*, run
-  `giveawayinator --open-live-search`: it opens TikTok's LIVE search for your `live_queries`
-  in your default browser, where you are already signed in and can see live rooms and tap
-  the giveaway button yourself. The optional `browser` notify channel does the same for
-  live candidates found during a scan. The bot never authenticates; you do.
+- **Live handoff to where you can actually enter.** TikTok gates live discovery behind
+  login (the bot never logs in), and the live giveaway / treasure-box entry button only
+  exists in the *mobile app*, not on desktop web. So live entry is a phone job. The `ntfy`
+  channel pushes live giveaways to your phone with a tap action that opens `@creator/live`
+  in the TikTok app, where the button lives. For scouting on desktop,
+  `giveawayinator --open-live-search` opens TikTok's LIVE search in your logged-in browser.
+  The bot never authenticates and never taps the button; you do.
 - **Requirement parsing.** Each alert includes a plain checklist (follow, like, comment,
   save, tag N friends) plus any deadline it can find ("ends 6/15", "winner announced Friday").
 - **Won't ping you twice.** A SQLite store remembers everything it has already shown you.
@@ -120,6 +121,11 @@ At the end of each run it prints a summary line:
   `notify.discord.webhook_url`, and add `"discord"` to `notify.channels`.
 - **browser**: for live-candidate giveaways only, opens `@creator/live` in your default
   (logged-in) browser, capped per run so a busy scan does not flood you with tabs.
+- **ntfy**: phone push via [ntfy.sh](https://ntfy.sh). Install the ntfy app, subscribe to
+  your `notify.ntfy.topic`, and live giveaways push to your phone with a tap action that
+  opens `@creator/live` in the TikTok app. This matters because the live giveaway /
+  treasure-box entry button only exists in the mobile app, not on desktop web, so the
+  actual entry happens on your phone. Defaults to live-only so it does not spam you.
 
 ## How it works
 

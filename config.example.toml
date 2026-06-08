@@ -26,13 +26,23 @@ max_delay = 5.0
 path = "seen.db"
 
 [notify]
-# Any subset of: "console", "desktop", "discord", "browser"
+# Any subset of: "console", "desktop", "discord", "browser", "ntfy"
 # "browser" auto-opens live-candidate streams in your logged-in browser (capped per run).
+# "ntfy" pushes to your phone (live giveaways are entered in the TikTok app, not desktop).
 channels = ["console"]
 
 [notify.discord]
 # Only used if "discord" is in channels.
 webhook_url = ""
+
+[notify.ntfy]
+# Phone push via https://ntfy.sh. Install the ntfy app and subscribe to this topic.
+# Pick something unguessable: anyone who knows the topic can read and post to it.
+# The notification's tap action opens @creator/live, which opens the TikTok app on a phone.
+topic = ""
+server = "https://ntfy.sh"
+# Only push live giveaways (the kind you must enter in the app). Set false for all.
+live_only = true
 
 [filter]
 # Skip posts older than this many days (0 = no limit).

@@ -25,6 +25,16 @@ def build_notifiers(cfg: NotifyConfig) -> list[Notifier]:
             from .browser import BrowserNotifier  # opens live candidates in your browser
 
             notifiers.append(BrowserNotifier())
+        elif channel == "ntfy":
+            from .ntfy import NtfyNotifier  # phone push with a tap-to-open-app action
+
+            notifiers.append(
+                NtfyNotifier(
+                    topic=cfg.ntfy.topic,
+                    server=cfg.ntfy.server,
+                    live_only=cfg.ntfy.live_only,
+                )
+            )
         else:
             raise ValueError(f"Unknown notify channel: {channel!r}")
     return notifiers

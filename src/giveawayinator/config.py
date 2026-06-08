@@ -31,9 +31,17 @@ class DiscordConfig:
 
 
 @dataclass
+class NtfyConfig:
+    topic: str = ""
+    server: str = "https://ntfy.sh"
+    live_only: bool = True  # only push live giveaways (the ones you enter in the app)
+
+
+@dataclass
 class NotifyConfig:
     channels: list[str] = field(default_factory=lambda: ["console"])
     discord: DiscordConfig = field(default_factory=DiscordConfig)
+    ntfy: NtfyConfig = field(default_factory=NtfyConfig)
 
 
 @dataclass
@@ -65,6 +73,7 @@ def load_config(path: str | Path) -> Config:
     store = raw.get("store", {})
     notify = raw.get("notify", {})
     discord = notify.get("discord", {})
+    ntfy = notify.get("ntfy", {})
     flt = raw.get("filter", {})
 
     return Config(
@@ -83,6 +92,11 @@ def load_config(path: str | Path) -> Config:
         notify=NotifyConfig(
             channels=notify.get("channels", ["console"]),
             discord=DiscordConfig(webhook_url=discord.get("webhook_url", "")),
+            ntfy=NtfyConfig(
+                topic=ntfy.get("topic", ""),
+                server=ntfy.get("server", "https://ntfy.sh"),
+                live_only=ntfy.get("live_only", True),
+            ),
         ),
         filter=FilterConfig(
             max_age_days=flt.get("max_age_days", 7),
