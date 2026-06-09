@@ -21,7 +21,7 @@ class DiscordNotifier:
             fields = [
                 {
                     "name": "🔴 LIVE NOW",
-                    "value": "Open the live and tap the Giveaway / treasure-box button to join.",
+                    "value": post.live_entry_hint,
                     "inline": False,
                 }
             ]

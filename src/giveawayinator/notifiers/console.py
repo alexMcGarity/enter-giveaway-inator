@@ -21,10 +21,7 @@ class ConsoleNotifier:
         if giveaway.live:
             # Live giveaways are joined by tapping the in-stream button, not by
             # commenting, so lead with that and send them straight to the stream.
-            body += (
-                "[bold red]🔴 LIVE NOW — open the stream and tap the "
-                "Giveaway / treasure-box button to join.[/bold red]\n"
-            )
+            body += f"[bold red]🔴 LIVE NOW — {giveaway.post.live_entry_hint}[/bold red]\n"
             if giveaway.requirements.as_checklist()[0] != "No explicit requirements found — read the caption":
                 body += f"\n[bold yellow]Also asks you to:[/bold yellow]\n{checklist}\n"
             link = post.live_url

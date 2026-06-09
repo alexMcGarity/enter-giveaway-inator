@@ -48,7 +48,7 @@ class NtfyNotifier:
         post = giveaway.post
         if giveaway.live:
             title = f"LIVE Pokemon giveaway: @{post.author}"
-            body = "Open in the TikTok app and tap the giveaway / treasure box to join."
+            body = post.live_entry_hint
             steps = [s for s in giveaway.requirements.as_checklist() if "No explicit" not in s]
             if steps:
                 body += "\nAlso: " + ", ".join(steps)

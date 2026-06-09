@@ -25,6 +25,15 @@ class Post:
             return self.url
         return f"https://www.tiktok.com/@{self.author}/live"
 
+    @property
+    def live_entry_hint(self) -> str:
+        """Platform-appropriate instruction for entering this live giveaway by hand."""
+        if "whatnot.com" in self.url:
+            return "Open the show in the Whatnot app and tap Enter Giveaway when the seller pins it."
+        if "tiktok.com" in self.url:
+            return "Open the live in the TikTok app and tap the giveaway / treasure-box button."
+        return "Open the live and enter the giveaway in the app."
+
 
 @dataclass
 class Requirements:

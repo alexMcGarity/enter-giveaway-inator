@@ -9,16 +9,22 @@ max_posts_per_hashtag = 30
 live_queries = ["pokemon giveaway", "pokemon cards", "pokemon tcg"]
 
 [source]
-# Apify scrapes TikTok on its own infrastructure and returns JSON, so this works from a
-# datacenter IP (direct scraping from the cloud gets blocked by TikTok).
-kind = "apify"
+# WHATNOT mode (TikTok scraper powered down for now). Lists currently-live Pokemon shows
+# via an Apify actor; the parser flags ones whose titles advertise a giveaway. To switch
+# back to TikTok, set kind = "apify".
+kind = "whatnot"
 
+[source.whatnot]
+actor = "devcake~whatnot-data-scraper"
+token = ""  # injected from APIFY_TOKEN
+keywords = ["pokemon"]
+# Throttled for the free tier (~$0.005/result + base): 6 results x 2 scans/day ~= $2/mo.
+max_results = 6
+
+# Dormant TikTok config, kept so we can switch back with kind = "apify".
 [source.apify]
 actor = "clockworks~tiktok-scraper"
 token = ""  # injected from APIFY_TOKEN
-# Search by newest in the last 24h so every scan brings FRESH posts (hashtag mode returns
-# stable popular posts that dedupe to nothing). results_per_hashtag = results per query.
-# Throttled for the free tier: 4 x 3 queries x 2 scans/day = ~24 results/day = ~$2.6/mo.
 results_per_hashtag = 4
 search_queries = ["pokemon giveaway", "pokemon card giveaway", "pokemon tcg giveaway"]
 date_filter = "PAST_24_HOURS"
@@ -42,4 +48,6 @@ live_only = true
 
 [filter]
 max_age_days = 7
-require_pokemon_keyword = true
+# Off for the whatnot source: the keyword search already scopes to Pokemon, and show
+# titles often do not contain the word "pokemon". (Set true again for the tiktok source.)
+require_pokemon_keyword = false

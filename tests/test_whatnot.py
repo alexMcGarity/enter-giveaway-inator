@@ -59,6 +59,11 @@ def test_fetch_builds_live_search_payload_and_maps():
     assert "devcake~whatnot-data-scraper" in captured["url"]
 
 
+def test_live_entry_hint_is_platform_aware():
+    wn = WhatnotSource._to_post(SAMPLE_ITEM)
+    assert "Whatnot" in wn.live_entry_hint and "Enter Giveaway" in wn.live_entry_hint
+
+
 def test_giveaway_parser_flags_whatnot_show():
     # A live Whatnot show whose title advertises a giveaway parses as a live giveaway.
     post = WhatnotSource._to_post(SAMPLE_ITEM)
