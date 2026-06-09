@@ -35,6 +35,18 @@ search_queries = ["pokemon giveaway", "pokemon card giveaway", "pokemon tcg give
 date_filter = "PAST_24_HOURS"  # ALL_TIME | PAST_24_HOURS | PAST_WEEK | PAST_MONTH | ...
 sorting = "LATEST"             # MOST_RELEVANT | MOST_LIKED | LATEST
 
+[source.whatnot]
+# PROTOTYPE. Used when kind = "whatnot". Lists currently-live Whatnot shows matching the
+# keywords (via an Apify actor's searchLiveStreams mode), flagged as live giveaways when
+# the title advertises one. Whatnot giveaways are in-stream 5-min events you enter by hand
+# in the app, so this tells you which shows to jump into. Token via APIFY_TOKEN.
+# NOTE: set filter.require_pokemon_keyword = false for this source -- the keyword search
+# already scopes to Pokemon, and show titles often do not contain the word "pokemon".
+actor = "devcake~whatnot-data-scraper"
+token = ""
+keywords = ["pokemon"]
+max_results = 20
+
 [store]
 # SQLite file used to remember which posts you've already been notified about.
 path = "seen.db"

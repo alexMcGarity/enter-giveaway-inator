@@ -39,12 +39,22 @@ class ApifyConfig:
 
 
 @dataclass
+class WhatnotConfig:
+    # Apify actor for Whatnot live-show discovery (prototype). searchLiveStreams mode.
+    actor: str = "devcake~whatnot-data-scraper"
+    token: str = ""
+    keywords: list[str] = field(default_factory=lambda: ["pokemon"])
+    max_results: int = 20
+
+
+@dataclass
 class SourceConfig:
-    kind: str = "sample"  # "sample" | "tiktok" | "apify"
+    kind: str = "sample"  # "sample" | "tiktok" | "apify" | "whatnot"
     headless: bool = True
     min_delay: float = 2.0
     max_delay: float = 5.0
     apify: ApifyConfig = field(default_factory=ApifyConfig)
+    whatnot: WhatnotConfig = field(default_factory=WhatnotConfig)
 
 
 @dataclass
@@ -93,6 +103,7 @@ def load_config(path: str | Path) -> Config:
     search = raw.get("search", {})
     source = raw.get("source", {})
     apify = source.get("apify", {})
+    whatnot = source.get("whatnot", {})
     store = raw.get("store", {})
     notify = raw.get("notify", {})
     discord = notify.get("discord", {})
@@ -121,6 +132,12 @@ def load_config(path: str | Path) -> Config:
                 ),
                 date_filter=apify.get("date_filter", "PAST_24_HOURS"),
                 sorting=apify.get("sorting", "LATEST"),
+            ),
+            whatnot=WhatnotConfig(
+                actor=whatnot.get("actor", "devcake~whatnot-data-scraper"),
+                token=os.environ.get("APIFY_TOKEN", whatnot.get("token", "")),
+                keywords=whatnot.get("keywords", ["pokemon"]),
+                max_results=whatnot.get("max_results", 20),
             ),
         ),
         notify=NotifyConfig(

@@ -67,6 +67,17 @@ def test_parse_matches_pokemon_keywords():
     assert gw.requirements.follow and gw.requirements.like
 
 
+def test_detects_whatnot_free_prize_lingo():
+    # Whatnot sellers say "FREE <prize>" / "giveys" instead of "giveaway".
+    assert parser.is_giveaway("FREE BOOSTER BOX! & LEGENDARY COLLECTIONS")
+    assert parser.is_giveaway("FREE CHAOS RISING BOOSTER PACKS!")
+    assert parser.is_giveaway("MOST NUKES ON WHATNOT FREE EVERY 5MINS")
+    assert parser.is_giveaway("FREE CHAOS RISING GIVEYS!")
+    # but not benign uses of "free" or plain rip/break shows
+    assert not parser.is_giveaway("free shipping on all singles")
+    assert not parser.is_giveaway("HIGH END CLAIMS W/ Tyler")
+
+
 def test_detects_live_giveaway_from_caption():
     gw = parser.parse(_post("Pokemon giveaway on live! tap the treasure box, follow to win"))
     assert gw is not None

@@ -30,6 +30,15 @@ def build_source(cfg: SourceConfig) -> Source:
             date_filter=cfg.apify.date_filter,
             sorting=cfg.apify.sorting,
         )
+    if cfg.kind == "whatnot":
+        from .whatnot import WhatnotSource  # lazy: prototype source
+
+        return WhatnotSource(
+            token=cfg.whatnot.token,
+            actor=cfg.whatnot.actor,
+            keywords=cfg.whatnot.keywords,
+            max_results=cfg.whatnot.max_results,
+        )
     raise ValueError(
-        f"Unknown source kind: {cfg.kind!r} (expected 'sample', 'tiktok', or 'apify')"
+        f"Unknown source kind: {cfg.kind!r} (expected 'sample', 'tiktok', 'apify', or 'whatnot')"
     )

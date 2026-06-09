@@ -35,7 +35,16 @@ GIVEAWAY_SIGNALS = [
     "enter to win",
     "free to enter",
     "raffle",
+    "givey",  # Whatnot slang: "giveys"
 ]
+
+# Whatnot live-show lingo: sellers advertise giveaways as "FREE <prize>" or "free every
+# 5 mins" rather than the word "giveaway". Kept precise (a prize word must follow soon)
+# so it does not fire on "free shipping" and the like.
+FREE_PRIZE_PATTERN = re.compile(
+    r"\bfree\b[^.\n!]{0,20}\b(booster|pack|box|slab|rip|case|sealed|claim|card|every)\b",
+    re.IGNORECASE,
+)
 
 # Phrases that mean the giveaway is happening on a livestream right now, where you
 # join by tapping the giveaway / treasure-box button instead of commenting on a post.
@@ -102,7 +111,9 @@ def find_keywords(text: str, keywords: list[str]) -> list[str]:
 
 def is_giveaway(caption: str) -> bool:
     """True if the caption looks like an actual giveaway (not just a card post)."""
-    return _matches_any(caption, [re.escape(s) for s in GIVEAWAY_SIGNALS])
+    if _matches_any(caption, [re.escape(s) for s in GIVEAWAY_SIGNALS]):
+        return True
+    return bool(FREE_PRIZE_PATTERN.search(caption))
 
 
 def is_pokemon(caption: str, keywords: list[str] | None = None) -> bool:
